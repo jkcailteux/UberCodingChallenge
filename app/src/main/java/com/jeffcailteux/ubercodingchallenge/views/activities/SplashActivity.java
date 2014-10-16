@@ -1,4 +1,4 @@
-package com.jeffcailteux.ubercodingchallenge.views;
+package com.jeffcailteux.ubercodingchallenge.views.activities;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -1,9 +1,8 @@
-package com.jeffcailteux.ubercodingchallenge.views;
+package com.jeffcailteux.ubercodingchallenge.views.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -15,6 +14,7 @@ import com.google.gson.Gson;
 import com.handmark.pulltorefresh.library.PullToRefreshBase;
 import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.jeffcailteux.ubercodingchallenge.R;
+import com.jeffcailteux.ubercodingchallenge.adapters.ImageSearchAdapter;
 import com.jeffcailteux.ubercodingchallenge.managers.NetworkingManager;
 import com.jeffcailteux.ubercodingchallenge.models.ImageModel;
 
@@ -49,8 +49,8 @@ public class MainActivity extends Activity {
     }
 
     NetworkingManager networkingManager;
-    int start = 0;
     int count = 0;
+    ImageSearchAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,34 +59,40 @@ public class MainActivity extends Activity {
         setTitle("Image Search");
         ButterKnife.inject(this);
         networkingManager = new NetworkingManager(this);
-        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
-        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
-            @Override
-            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+//        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+//        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+//            @Override
+//            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+//
+//            }
+//
+//            @Override
+//            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+//
+//            }
+//        });
+    }
 
-            }
-
-            @Override
-            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
-                
-            }
-        });
-
+    @Override
+    public void onResume(){
+        super.onResume();
+        adapter = new ImageSearchAdapter(this);
+        listView.setAdapter(adapter);
     }
 
     public void searchForImages() {
-        networkingManager.searchForImages(searchedit.getText().toString(), new Response.Listener<JSONObject>() {
+        networkingManager.searchForImages(searchedit.getText().toString(), count, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
-                ArrayList<ImageModel> images = new ArrayList<ImageModel>();
                 try {
                     JSONArray results = jsonObject.getJSONObject("responseData").getJSONArray("results");
                     for (int x = 0; x != results.length(); x++) {
                         Gson gson = new Gson();
                         ImageModel model = gson.fromJson(String.valueOf(results.getJSONObject(x)), ImageModel.class);
-                        images.add(model);
+                        adapter.images.add(model);
                     }
-
+                    
+                    count += 6;
                 } catch (JSONException e) {
                     Log.e("imagesearch", e.getLocalizedMessage());
                     Toast.makeText(MainActivity.this, "Error searching for images", Toast.LENGTH_SHORT).show();
@@ -101,6 +107,4 @@ public class MainActivity extends Activity {
             }
         });
     }
-
-
 }

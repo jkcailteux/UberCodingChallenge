@@ -32,15 +32,17 @@ public class NetworkingManager {
     }
 
 
-    public void searchForImages(String searchTerm, Response.Listener<JSONObject> callback, Response.ErrorListener errorListener) {
-        String url = buildURL(searchTerm);
+    public void searchForImages(String searchTerm, int start, Response.Listener<JSONObject> callback, Response.ErrorListener errorListener) {
+        String url = buildURL(searchTerm, start);
         sendRequest(new JsonObjectRequest(url, null, callback, errorListener));
     }
 
-    private String buildURL(String searchTerm) {
+    private String buildURL(String searchTerm, int start) {
         String url = imagesAPIUrl;
         url += "&q=" + searchTerm.replaceAll(" ", "%20");
         url += "&userip=" + ipAddr;
+        url += "&rsz=6";
+        url += "&start=" + start;
 
         return url;
     }
