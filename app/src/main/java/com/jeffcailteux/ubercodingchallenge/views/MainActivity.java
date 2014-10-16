@@ -3,13 +3,17 @@ package com.jeffcailteux.ubercodingchallenge.views;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.AbsListView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.jeffcailteux.ubercodingchallenge.R;
 import com.jeffcailteux.ubercodingchallenge.managers.NetworkingManager;
 import com.jeffcailteux.ubercodingchallenge.models.ImageModel;
@@ -33,6 +37,9 @@ public class MainActivity extends Activity {
     @InjectView(R.id.search_edittext)
     EditText searchedit;
 
+    @InjectView(R.id.search_listview)
+    PullToRefreshListView listView;
+
     @OnClick(R.id.search_button)
     public void search() {
         if (searchedit.getText().length() > 0) {
@@ -42,6 +49,8 @@ public class MainActivity extends Activity {
     }
 
     NetworkingManager networkingManager;
+    int start = 0;
+    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +59,18 @@ public class MainActivity extends Activity {
         setTitle("Image Search");
         ButterKnife.inject(this);
         networkingManager = new NetworkingManager(this);
+        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener2<ListView>() {
+            @Override
+            public void onPullDownToRefresh(PullToRefreshBase<ListView> refreshView) {
+
+            }
+
+            @Override
+            public void onPullUpToRefresh(PullToRefreshBase<ListView> refreshView) {
+                
+            }
+        });
 
     }
 
