@@ -16,7 +16,7 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
         getActionBar().hide();
 
-        //if logged in, fade to home
+        // fade to main
         final Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override

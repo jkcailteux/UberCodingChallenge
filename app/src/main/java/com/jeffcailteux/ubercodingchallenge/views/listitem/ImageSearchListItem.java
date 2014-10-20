@@ -45,6 +45,8 @@ public class ImageSearchListItem extends LinearLayout {
         iv1 = (NetworkImageView) findViewById(R.id.listitem_image_search_iv1);
         iv2 = (NetworkImageView) findViewById(R.id.listitem_image_search_iv2);
         iv3 = (NetworkImageView) findViewById(R.id.listitem_image_search_iv3);
+
+        //force widths
         iv1.setMinimumWidth(viewwidth);
         iv1.setMaxWidth(viewwidth);
         iv2.setMinimumWidth(viewwidth);
@@ -57,6 +59,8 @@ public class ImageSearchListItem extends LinearLayout {
     }
 
     public void setImages(ImageModel im1, ImageModel im2, ImageModel im3, ImageLoader imageLoader) {
+
+        //set height to tallest image of the row, with maxheight as upper limit
         int height = newheight(im1);
         if (newheight(im2) > height)
             height = newheight(im2);
@@ -68,6 +72,7 @@ public class ImageSearchListItem extends LinearLayout {
 
         this.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, height));
 
+        //load images into imageviews
         if (im1 != null && im1.url != null)
             iv1.setImageUrl(im1.url, imageLoader);
         if (im2 != null && im2.url != null)
@@ -76,6 +81,7 @@ public class ImageSearchListItem extends LinearLayout {
             iv3.setImageUrl(im3.url, imageLoader);
     }
 
+    //maintain ratio of images with new widths
     private int newheight(ImageModel im) {
         return im.height * (viewwidth / im.width);
     }

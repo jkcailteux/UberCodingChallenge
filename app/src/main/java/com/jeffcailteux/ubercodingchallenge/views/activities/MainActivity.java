@@ -59,6 +59,7 @@ public class MainActivity extends Activity {
         }
     }
 
+    //Set up Singletons and values
     NetworkingManager networkingManager;
     ImageSearchAdapter adapter;
     int viewwidth, maxheight;
@@ -73,6 +74,8 @@ public class MainActivity extends Activity {
         setTitle("Image Search");
         ButterKnife.inject(this);
         networkingManager = new NetworkingManager(this);
+
+        //setup listview and screen dimensions
         listView.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
         listView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
         Display display = getWindowManager().getDefaultDisplay();
@@ -84,6 +87,7 @@ public class MainActivity extends Activity {
         viewwidth = width - (int) (50 * onedp);
         sharedPrefManager = new SharedPrefManager(this);
         maxheight = height / 3;
+        //setup listview refresh
         listView.setAdapter(adapter);
         listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
             @Override
@@ -104,6 +108,7 @@ public class MainActivity extends Activity {
 
     public void searchForImages(int resultCount, boolean clear) {
         spinner.show();
+        //if loading new set or additional loading
         if (clear) {
             images.clear();
             sharedPrefManager.addSearchTerm(searchedit.getText().toString());
@@ -113,6 +118,7 @@ public class MainActivity extends Activity {
             public void onResponse(JSONObject jsonObject) {
                 spinner.hide();
                 try {
+                    //add images to images list
                     JSONArray results = jsonObject.getJSONObject("responseData").getJSONArray("results");
                     for (int x = 0; x != results.length(); x++) {
                         Gson gson = new Gson();
@@ -144,6 +150,8 @@ public class MainActivity extends Activity {
         return super.onCreateOptionsMenu(menu);
     }
 
+
+    //load previous searches in dialog
     public void previousSearch(MenuItem menuItem) {
         final Set<String> searches = sharedPrefManager.getSearchTerms();
         if (searches == null)
@@ -169,6 +177,7 @@ public class MainActivity extends Activity {
 
     }
 
+    //clear out old searches
     public void clearHistory(MenuItem menuItem) {
         sharedPrefManager.clearSearches();
         Toast.makeText(MainActivity.this, "Search history cleared", Toast.LENGTH_SHORT).show();

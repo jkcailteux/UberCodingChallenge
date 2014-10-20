@@ -54,6 +54,7 @@ public class ImageSearchAdapter extends BaseAdapter {
             return null;
 
         ImageSearchListItem listItem;
+        //to keep inflations to a minimum, try to typecast
         if (convertView == null || convertView.getClass() != ImageSearchListItem.class)
             listItem = (ImageSearchListItem) LayoutInflater.from(context).inflate(R.layout.listitem_image_search, null);
         else

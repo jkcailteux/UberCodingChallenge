@@ -3,7 +3,9 @@ package com.jeffcailteux.ubercodingchallenge.models;
 /**
  * Created by jeffcailteux on 10/16/14.
  */
+
 public class ImageModel {
+    //all fields returned by google image search API, most go unused
     public String content;
     public String contentNoFormatting;
     public String GsearchResultClass;

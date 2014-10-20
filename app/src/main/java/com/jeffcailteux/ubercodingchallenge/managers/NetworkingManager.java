@@ -51,6 +51,7 @@ public class NetworkingManager {
         sendRequest(new JsonObjectRequest(url, null, callback, errorListener));
     }
 
+    //build url for google images api with proper params
     private String buildURL(String searchTerm, int start, int count) {
         String url = imagesAPIUrl;
         url += "&q=" + searchTerm.replaceAll(" ", "%20");
@@ -66,6 +67,7 @@ public class NetworkingManager {
         mRequestQueue.start();
     }
 
+    //Google Image Search requires IP addr sent with, to prevent spamming
     private String getLocalIpAddress() {
         try {
             for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
