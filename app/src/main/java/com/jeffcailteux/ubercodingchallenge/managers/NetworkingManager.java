@@ -1,11 +1,13 @@
 package com.jeffcailteux.ubercodingchallenge.managers;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
 import android.text.format.Formatter;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -25,23 +27,35 @@ public class NetworkingManager {
 
     RequestQueue mRequestQueue;
     String ipAddr;
+    public ImageLoader imageLoader;
 
     public NetworkingManager(Activity activity) {
         mRequestQueue = Volley.newRequestQueue(activity);
         this.ipAddr = getLocalIpAddress();
+        this.imageLoader = new ImageLoader(mRequestQueue, new ImageLoader.ImageCache() {
+            @Override
+            public Bitmap getBitmap(String s) {
+                return null;
+            }
+
+            @Override
+            public void putBitmap(String s, Bitmap bitmap) {
+
+            }
+        });
     }
 
 
     public void searchForImages(String searchTerm, int start, Response.Listener<JSONObject> callback, Response.ErrorListener errorListener) {
-        String url = buildURL(searchTerm, start);
+        String url = buildURL(searchTerm, start, 6);
         sendRequest(new JsonObjectRequest(url, null, callback, errorListener));
     }
 
-    private String buildURL(String searchTerm, int start) {
+    private String buildURL(String searchTerm, int start, int count) {
         String url = imagesAPIUrl;
         url += "&q=" + searchTerm.replaceAll(" ", "%20");
         url += "&userip=" + ipAddr;
-        url += "&rsz=6";
+        url += "&rsz=" + count;
         url += "&start=" + start;
 
         return url;

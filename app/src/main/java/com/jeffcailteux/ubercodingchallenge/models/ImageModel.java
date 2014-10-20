@@ -7,7 +7,7 @@ public class ImageModel {
     public String content;
     public String contentNoFormatting;
     public String GsearchResultClass;
-    public String height;
+    public int height;
     public String html;
     public String originalContextUrl;
     public int tbHeight;

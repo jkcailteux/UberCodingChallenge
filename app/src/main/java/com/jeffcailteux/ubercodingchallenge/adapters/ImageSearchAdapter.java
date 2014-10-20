@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.android.volley.toolbox.ImageLoader;
 import com.jeffcailteux.ubercodingchallenge.R;
 import com.jeffcailteux.ubercodingchallenge.models.ImageModel;
 import com.jeffcailteux.ubercodingchallenge.views.listitem.ImageSearchListItem;
@@ -18,19 +19,25 @@ public class ImageSearchAdapter extends BaseAdapter {
 
     public ArrayList<ImageModel> images;
     Context context;
+    ImageLoader imageLoader;
+    int viewwidth;
+    int maxheight;
 
-    public ImageSearchAdapter(Context context) {
+    public ImageSearchAdapter(Context context, ImageLoader imageLoader, int viewwidth, int maxheight, ArrayList<ImageModel> images) {
         this.context = context;
-        images = new ArrayList<ImageModel>();
+        this.imageLoader = imageLoader;
+        this.images = images;
+        this.viewwidth = viewwidth;
+        this.maxheight = maxheight;
     }
-
 
     @Override
     public int getCount() {
         if (images == null)
             return 0;
         else
-            return images.size();
+            //return images.size();
+            return (int) (images.size() / 3);
     }
 
     @Override
@@ -45,11 +52,14 @@ public class ImageSearchAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         if (images == null || images.size() == 0)
             return null;
+
         ImageSearchListItem listItem;
         if (convertView == null || convertView.getClass() != ImageSearchListItem.class)
             listItem = (ImageSearchListItem) LayoutInflater.from(context).inflate(R.layout.listitem_image_search, null);
         else
             listItem = (ImageSearchListItem) convertView;
+        listItem.setup(viewwidth, maxheight);
+        listItem.setImages((ImageModel) getItem(position), (ImageModel) getItem(position + 1), (ImageModel) getItem(position + 2), imageLoader);
         return listItem;
     }
 
@@ -60,6 +70,14 @@ public class ImageSearchAdapter extends BaseAdapter {
             return true;
         else
             return images.size() == 0 ? true : false;
+    }
+
+    @Override
+    public boolean isEnabled(int position) {
+        if (images.size() > position)
+            return true;
+        else
+            return false;
     }
 
     @Override
