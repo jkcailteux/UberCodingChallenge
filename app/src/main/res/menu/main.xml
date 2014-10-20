@@ -1,4 +1,13 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.jeffcailteux.ubercodingchallenge.views.activities.MainActivity" >
+    tools:context="com.jeffcailteux.ubercodingchallenge.views.activities.MainActivity">
+    <item
+        android:onClick="previousSearch"
+        android:showAsAction="never"
+        android:title="Previous Searches" />
+
+    <item
+        android:onClick="clearHistory"
+        android:showAsAction="never"
+        android:title="Clear History" />
 </menu>

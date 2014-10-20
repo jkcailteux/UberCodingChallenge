@@ -46,8 +46,8 @@ public class NetworkingManager {
     }
 
 
-    public void searchForImages(String searchTerm, int start, Response.Listener<JSONObject> callback, Response.ErrorListener errorListener) {
-        String url = buildURL(searchTerm, start, 6);
+    public void searchForImages(String searchTerm, int start,int count, Response.Listener<JSONObject> callback, Response.ErrorListener errorListener) {
+        String url = buildURL(searchTerm, start, count);
         sendRequest(new JsonObjectRequest(url, null, callback, errorListener));
     }
 

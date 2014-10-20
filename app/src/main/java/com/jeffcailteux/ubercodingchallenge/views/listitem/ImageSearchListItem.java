@@ -57,13 +57,13 @@ public class ImageSearchListItem extends LinearLayout {
     }
 
     public void setImages(ImageModel im1, ImageModel im2, ImageModel im3, ImageLoader imageLoader) {
-        int height = newheight(im1.height, im1.width);
-        if (newheight(im2.height, im2.width) > height)
-            height = newheight(im2.height, im2.width);
-        if (newheight(im3.height, im3.width) > height)
-            height = newheight(im3.height, im3.width);
+        int height = newheight(im1);
+        if (newheight(im2) > height)
+            height = newheight(im2);
+        if (newheight(im3) > height)
+            height = newheight(im3);
 
-        if (height > maxheight)
+        if (height > maxheight || height == 0)
             height = maxheight;
 
         this.setLayoutParams(new AbsListView.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, height));
@@ -76,8 +76,8 @@ public class ImageSearchListItem extends LinearLayout {
             iv3.setImageUrl(im3.url, imageLoader);
     }
 
-    private int newheight(int oldheight, int oldwidth) {
-        return oldheight * (viewwidth / oldwidth);
+    private int newheight(ImageModel im) {
+        return im.height * (viewwidth / im.width);
     }
 
 }

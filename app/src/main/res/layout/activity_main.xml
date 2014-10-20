@@ -13,7 +13,7 @@
         android:orientation="horizontal"
         android:paddingTop="5dp">
 
-        <EditText
+        <AutoCompleteTextView
             android:id="@+id/search_edittext"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -32,18 +32,12 @@
             android:text="Search" />
     </RelativeLayout>
 
-    <ListView
+
+    <com.handmark.pulltorefresh.library.PullToRefreshListView
         android:id="@+id/search_listview"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/search_container"
         android:layout_marginTop="5dp" />
-
-    <!--<com.handmark.pulltorefresh.library.PullToRefreshListView-->
-    <!--android:id="@+id/search_listview"-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:layout_below="@+id/search_container"-->
-    <!--android:layout_marginTop="5dp" />-->
 
 </RelativeLayout>

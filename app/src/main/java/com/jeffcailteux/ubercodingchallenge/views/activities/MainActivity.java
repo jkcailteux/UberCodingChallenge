@@ -1,22 +1,31 @@
 package com.jeffcailteux.ubercodingchallenge.views.activities;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Display;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
-import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.google.gson.Gson;
+import com.handmark.pulltorefresh.library.PullToRefreshBase;
+import com.handmark.pulltorefresh.library.PullToRefreshListView;
 import com.jeffcailteux.ubercodingchallenge.R;
 import com.jeffcailteux.ubercodingchallenge.adapters.ImageSearchAdapter;
 import com.jeffcailteux.ubercodingchallenge.managers.NetworkingManager;
+import com.jeffcailteux.ubercodingchallenge.managers.SharedPrefManager;
 import com.jeffcailteux.ubercodingchallenge.models.ImageModel;
 import com.jeffcailteux.ubercodingchallenge.views.extra.Spinner;
 
@@ -25,6 +34,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -37,29 +47,24 @@ public class MainActivity extends Activity {
     Button searchbutton;
 
     @InjectView(R.id.search_edittext)
-    EditText searchedit;
-
-//    @InjectView(R.id.search_listview)
-//    PullToRefreshListView listView;
+    AutoCompleteTextView searchedit;
 
     @InjectView(R.id.search_listview)
-    ListView listView;
-
-    Spinner spinner = new Spinner(this);
-    ArrayList<ImageModel> images = new ArrayList<ImageModel>();
+    PullToRefreshListView listView;
 
     @OnClick(R.id.search_button)
     public void search() {
         if (searchedit.getText().length() > 0) {
-            searchForImages();
+            searchForImages(6, true);
         }
-
     }
 
     NetworkingManager networkingManager;
-    int count = 0;
     ImageSearchAdapter adapter;
     int viewwidth, maxheight;
+    Spinner spinner = new Spinner(this);
+    ArrayList<ImageModel> images = new ArrayList<ImageModel>();
+    SharedPrefManager sharedPrefManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,8 +73,8 @@ public class MainActivity extends Activity {
         setTitle("Image Search");
         ButterKnife.inject(this);
         networkingManager = new NetworkingManager(this);
-        //listView.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
-        // listView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
+        listView.setShowDividers(LinearLayout.SHOW_DIVIDER_NONE);
+        listView.setMode(PullToRefreshBase.Mode.PULL_FROM_END);
         Display display = getWindowManager().getDefaultDisplay();
         Point size = new Point();
         display.getSize(size);
@@ -77,9 +82,18 @@ public class MainActivity extends Activity {
         int height = size.y;
         float onedp = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 1, getResources().getDisplayMetrics());
         viewwidth = width - (int) (50 * onedp);
+        sharedPrefManager = new SharedPrefManager(this);
         maxheight = height / 3;
         listView.setAdapter(adapter);
-
+        listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {
+            @Override
+            public void onRefresh(PullToRefreshBase<ListView> refreshView) {
+                refreshView.onRefreshComplete();
+                if (searchedit.getText().length() > 0) {
+                    searchForImages(3, false);
+                }
+            }
+        });
     }
 
     @Override
@@ -88,10 +102,13 @@ public class MainActivity extends Activity {
 
     }
 
-    public void searchForImages() {
+    public void searchForImages(int resultCount, boolean clear) {
         spinner.show();
-        images.clear();
-        networkingManager.searchForImages(searchedit.getText().toString(), count, new Response.Listener<JSONObject>() {
+        if (clear) {
+            images.clear();
+            sharedPrefManager.addSearchTerm(searchedit.getText().toString());
+        }
+        networkingManager.searchForImages(searchedit.getText().toString(), images.size(), resultCount, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject jsonObject) {
                 spinner.hide();
@@ -104,7 +121,6 @@ public class MainActivity extends Activity {
                     }
                     adapter = new ImageSearchAdapter(MainActivity.this, networkingManager.imageLoader, viewwidth, maxheight, images);
                     listView.setAdapter(adapter);
-                    count += 6;
                 } catch (JSONException e) {
                     Log.e("imagesearch", e.getLocalizedMessage());
                     Toast.makeText(MainActivity.this, "Error searching for images", Toast.LENGTH_SHORT).show();
@@ -119,5 +135,42 @@ public class MainActivity extends Activity {
                 Toast.makeText(MainActivity.this, "Error searching for images", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    public void previousSearch(MenuItem menuItem) {
+        final Set<String> searches = sharedPrefManager.getSearchTerms();
+        if (searches == null)
+            return;
+        final ArrayList<CharSequence> items = new ArrayList<CharSequence>();
+        for (String s : searches) {
+            items.add(s);
+        }
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setSingleChoiceItems(searches.toArray(new CharSequence[searches.size()]), -1, new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface d, int n) {
+                searchedit.setText(items.get(n));
+                searchForImages(6, true);
+                d.dismiss();
+            }
+
+        });
+        builder.setNegativeButton("Cancel", null);
+        builder.setTitle("Previous Searches");
+        builder.show();
+
+    }
+
+    public void clearHistory(MenuItem menuItem) {
+        sharedPrefManager.clearSearches();
+        Toast.makeText(MainActivity.this, "Search history cleared", Toast.LENGTH_SHORT).show();
     }
 }

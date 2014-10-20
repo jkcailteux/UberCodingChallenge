@@ -59,7 +59,7 @@ public class ImageSearchAdapter extends BaseAdapter {
         else
             listItem = (ImageSearchListItem) convertView;
         listItem.setup(viewwidth, maxheight);
-        listItem.setImages((ImageModel) getItem(position), (ImageModel) getItem(position + 1), (ImageModel) getItem(position + 2), imageLoader);
+        listItem.setImages((ImageModel) getItem(position * 3), (ImageModel) getItem(position * 3 + 1), (ImageModel) getItem(position * 3 + 2), imageLoader);
         return listItem;
     }
 
