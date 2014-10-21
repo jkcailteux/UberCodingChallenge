@@ -87,6 +87,7 @@ public class MainActivity extends Activity {
         viewwidth = width - (int) (50 * onedp);
         sharedPrefManager = new SharedPrefManager(this);
         maxheight = height / 3;
+
         //setup listview refresh
         listView.setAdapter(adapter);
         listView.setOnRefreshListener(new PullToRefreshBase.OnRefreshListener<ListView>() {

@@ -36,7 +36,6 @@ public class ImageSearchAdapter extends BaseAdapter {
         if (images == null)
             return 0;
         else
-            //return images.size();
             return (int) (images.size() / 3);
     }
 
@@ -59,6 +58,8 @@ public class ImageSearchAdapter extends BaseAdapter {
             listItem = (ImageSearchListItem) LayoutInflater.from(context).inflate(R.layout.listitem_image_search, null);
         else
             listItem = (ImageSearchListItem) convertView;
+
+        //setup listitem
         listItem.setup(viewwidth, maxheight);
         listItem.setImages((ImageModel) getItem(position * 3), (ImageModel) getItem(position * 3 + 1), (ImageModel) getItem(position * 3 + 2), imageLoader);
         return listItem;
